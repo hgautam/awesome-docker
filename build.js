@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const cheerio = require('cheerio');
 const showdown = require('showdown');
 const Parcel = require('parcel-bundler');
-// const sm = require('sitemap');
 const { SitemapStream, streamToPromise } = require('sitemap');
 
 process.env.NODE_ENV = 'production';
@@ -13,7 +12,7 @@ const LOG = {
     if (process.env.DEBUG) console.log('💡 DEBUG: ', { ...args });
   },
 };
-const handleFailure = err => {
+const handleFailure = (err) => {
   LOG.error(err);
   process.exit(1);
 };
@@ -27,26 +26,8 @@ const indexTemplate = `${WEBSITE_FOLDER}/index.tmpl.html`;
 const indexDestination = `${WEBSITE_FOLDER}/index.html`;
 
 async function processIndex() {
-  const converter = new showdown.Converter({
-    omitExtraWLInCodeBlocks: true,
-    simplifiedAutoLink: true,
-    excludeTrailingPunctuationFromURLs: true,
-    literalMidWordUnderscores: true,
-    strikethrough: true,
-    tables: true,
-    tablesHeaderId: true,
-    ghCodeBlocks: true,
-    tasklists: true,
-    disableForced4SpacesIndentedSublists: true,
-    simpleLineBreaks: true,
-    requireSpaceBeforeHeadingText: true,
-    ghCompatibleHeaderId: true,
-    ghMentions: true,
-    backslashEscapesHTMLTags: true,
-    emoji: true,
-    splitAdjacentBlockquotes: true,
-  });
-  // converter.setFlavor('github');
+  const converter = new showdown.Converter();
+  converter.setFlavor('github');
 
   try {
     LOG.debug('Loading files...', { indexTemplate, README });
@@ -90,7 +71,7 @@ const bundle = () => {
       smStream.end();
       return streamToPromise(smStream);
     })
-    .then(sm =>
+    .then((sm) =>
       // Creates a sitemap object given the input configuration with URLs
       fs.outputFile(
         'dist/sitemap.xml',
